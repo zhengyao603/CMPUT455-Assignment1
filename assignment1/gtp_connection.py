@@ -272,7 +272,7 @@ class GtpConnection:
         for possible_move in possible_moves:
             if self.play_cmd([args[0].lower(), possible_move]):
                 coord = move_to_coord(possible_move, self.board.size)
-                self.board[coord_to_point(coord[0], coord[1], self.board.size)] = EMPTY
+                self.board.board[coord_to_point(coord[0], coord[1], self.board.size)] = EMPTY
                 legal_moves.append(possible_move)
         legal_moves.sort()
         return legal_moves
@@ -287,41 +287,41 @@ class GtpConnection:
 
             # check if wrong color
             if board_color != 'b' and board_color != 'w':
-                self.respond("Illegal Move: {} wrong color".format(board_move))
+                self.respond('illegal move: "{} {}" wrong color'.format(board_color, board_move))
                 return False
             color = color_to_int(board_color)
 
             # check if wrong coordinate
             if args[1].lower() == "pass":
-                self.respond("Illegal Move: {} wrong coordinate".format(board_move))
+                self.respond('illegal move: "{} {}" wrong coordinate'.format(board_color, board_move))
                 return False
             coord = move_to_coord(args[1], self.board.size)
             if coord:
                 move = coord_to_point(coord[0], coord[1], self.board.size)
             else:
                 self.error(
-                    "Error executing move {} converted from {}".format(move, args[1])
+                    "Error executing move {} converted from {}".format(board_color, board_move)
                 )
                 return False
             
             # check if the position is occupied
-            if self.board[move] != EMPTY:
-                self.respond("Illegal Move: {} occupied".format(board_move))
+            if self.board.board[move] != EMPTY:
+                self.respond('illegal move: "{} {}" occupied'.format(board_color, board_move))
                 return False
             
             # check if the position will be capture
             board_copy = self.board.copy()
-            board_copy[move] = color
-            for nb in self.board_copy.neighbors(move):
-                if GoBoardUtil.opponent(color) == board_copy[nb]:
+            board_copy.board[move] = color
+            for nb in board_copy._neighbors(move):
+                if GoBoardUtil.opponent(color) == board_copy.board[nb]:
                     if not board_copy._has_liberty(board_copy._block_of(nb)):
-                        self.respond("Illegal Move: {} capture".format(board_move))
+                        self.respond('illegal move: "{} {}" capture'.format(board_color, board_move))
                         board_copy = None
                         return False
 
             # check if the position will be suicide
             if not board_copy._has_liberty(board_copy._block_of(move)):
-                self.respond("Illegal Move: {} suicide".format(board_move))
+                self.respond('illegal move: "{} {}" suicide'.format(board_color, board_move))
                 board_copy = None
                 return False
 
@@ -335,7 +335,7 @@ class GtpConnection:
             # self.respond()
 
             # play the legal move
-            self.board[move] = color
+            self.board.board[move] = color
             self.board.current_player = GoBoardUtil.opponent(color)
             return True
         
