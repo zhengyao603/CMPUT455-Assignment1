@@ -260,17 +260,18 @@ class GtpConnection:
     def gogui_rules_final_result_cmd(self, args):
         """ Implement this function for Assignment 1 """
         if not self.gogui_rules_legal_moves_cmd(args):
-            self.respond(GoBoardUtil.opponent(args[0].lower()))
+            self.respond(GoBoardUtil.opponent(color_to_int(args[0])))
         else:
             self.respond("unknown")
 
     def gogui_rules_legal_moves_cmd(self, args):
         """ Implement this function for Assignment 1 """
         possible_moves = self.board.get_empty_points()
-        possible_moves = list(map(format_point, possible_moves))
+        # possible_moves = list(map(format_point, possible_moves))
         legal_moves = list()
         for possible_move in possible_moves:
-            if self.play_cmd([args[0].lower(), possible_move]):
+            possible_move = format_point(point_to_coord(possible_move, self.board.size))
+            if self.play_cmd([args[0], possible_move]):
                 coord = move_to_coord(possible_move, self.board.size)
                 self.board.board[coord_to_point(coord[0], coord[1], self.board.size)] = EMPTY
                 legal_moves.append(possible_move)
@@ -337,6 +338,8 @@ class GtpConnection:
             # play the legal move
             self.board.board[move] = color
             self.board.current_player = GoBoardUtil.opponent(color)
+            self.respond("hahahahahahha")
+
             return True
         
         except Exception as e:
@@ -344,8 +347,8 @@ class GtpConnection:
 
     def genmove_cmd(self, args):
         """ generate a move for color args[0] in {'b','w'} """
-        board_color = args[0].lower()
-        color = color_to_int(board_color)
+        # board_color = args[0].lower()
+        # color = color_to_int(board_color)
         # move = self.go_engine.get_move(self.board, color)
         # if self.board.is_legal(move, color):
         #     self.board.play_move(move, color)
@@ -353,6 +356,9 @@ class GtpConnection:
         # else:
         #     self.respond("Illegal move: {}".format(move_as_string))
         moves = self.gogui_rules_legal_moves_cmd(args)
+        if not moves:
+            self.respond(self.gogui_rules_final_result_cmd(args))
+            return
         move = random.choice(moves)
         move_coord = point_to_coord(move, self.board.size)
         move_as_string = format_point(move_coord)
