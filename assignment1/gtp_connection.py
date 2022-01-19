@@ -261,36 +261,14 @@ class GtpConnection:
     """
     def gogui_rules_final_result_cmd(self, args):
         """ Implement this function for Assignment 1 """
-        if not self.gogui_rules_legal_moves_cmd(args):
+        if not self.get_legal_moves():
             self.respond(GoBoardUtil.opponent(self.board.current_player))
         else:
             self.respond("unknown")
 
     def gogui_rules_legal_moves_cmd(self, args):
         """ Implement this function for Assignment 1 """
-        possible_moves = self.board.get_empty_points()
-        legal_moves = list()
-        current_player = self.board.current_player
-        for possible_move in possible_moves:
-
-            if_capture_suicide = False
-
-            # check if the position will be capture
-            board_copy = self.board.copy()
-            board_copy.board[possible_move] = current_player
-            for nb in board_copy._neighbors(possible_move):
-                if GoBoardUtil.opponent(current_player) == board_copy.board[nb]:
-                    if not board_copy._has_liberty(board_copy._block_of(nb)):
-                        if_capture_suicide = True
-                        break
-            
-
-            # check if the position will be suicide
-            if not board_copy._has_liberty(board_copy._block_of(possible_move)):
-                if_capture_suicide = True
-
-            if not if_capture_suicide:
-                legal_moves.append(possible_move)
+        legal_moves = self.get_legal_moves()
 
         legal_moves_str = []
         for lm in legal_moves:
@@ -363,7 +341,7 @@ class GtpConnection:
 
     def genmove_cmd(self, args):
         """ generate a move for color args[0] in {'b','w'} """
-        moves = self.gogui_rules_legal_moves_cmd(args)
+        moves = self.get_legal_moves()
         if not moves:
             # self.respond(self.gogui_rules_final_result_cmd(args))
             self.respond("resign")
@@ -372,6 +350,36 @@ class GtpConnection:
         self.board.board[move] = args[0]
         self.board.current_player = GoBoardUtil.opponent(args[0])
 
+
+    def get_legal_moves(self):
+        """ find legal moves for current player"""
+        possible_moves = self.board.get_empty_points()
+        legal_moves = list()
+        current_player = self.board.current_player
+        for possible_move in possible_moves:
+
+            if_capture_suicide = False
+
+            # check if the position will be capture
+            board_copy = self.board.copy()
+            board_copy.board[possible_move] = current_player
+            for nb in board_copy._neighbors(possible_move):
+                if GoBoardUtil.opponent(current_player) == board_copy.board[nb]:
+                    if not board_copy._has_liberty(board_copy._block_of(nb)):
+                        if_capture_suicide = True
+                        break
+            
+
+            # check if the position will be suicide
+            if not board_copy._has_liberty(board_copy._block_of(possible_move)):
+                if_capture_suicide = True
+
+            if not if_capture_suicide:
+                legal_moves.append(possible_move)
+                
+        return legal_moves
+
+    
 
     """
     ==========================================================================
