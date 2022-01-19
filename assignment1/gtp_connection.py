@@ -262,13 +262,13 @@ class GtpConnection:
     def gogui_rules_final_result_cmd(self, args):
         """ Implement this function for Assignment 1 """
         if not self.get_legal_moves():
-            if GoBoardUtil.opponent(self.board.current_player) == 1:
+            if GoBoardUtil.opponent(self.board.current_player) == BLACK:
                 self.respond("black")
-            elif GoBoardUtil.opponent(self.board.current_player) == 2:
+            elif GoBoardUtil.opponent(self.board.current_player) == WHITE:
                 self.respond("white")
             else:
                 self.error("unknown color")
-                
+        
         else:
             self.respond("unknown")
 
@@ -285,7 +285,7 @@ class GtpConnection:
         legal_moves_str.sort()
         legal_str = " ".join(legal_moves_str)
         self.respond(legal_str)
-        return legal_moves
+        # return legal_moves
 
     def play_cmd(self, args):
         """
@@ -353,9 +353,8 @@ class GtpConnection:
             self.respond("resign")
             return
         move = random.choice(moves)
-        self.board.board[move] = args[0]
-        self.board.current_player = GoBoardUtil.opponent(args[0])
-
+        self.board.board[move] = color_to_int(args[0].lower)
+        self.board.current_player = GoBoardUtil.opponent(color_to_int(args[0].lower))
 
     def get_legal_moves(self):
         """ find legal moves for current player"""
@@ -374,7 +373,6 @@ class GtpConnection:
                     if not board_copy._has_liberty(board_copy._block_of(nb)):
                         if_capture_suicide = True
                         break
-            
 
             # check if the position will be suicide
             if not board_copy._has_liberty(board_copy._block_of(possible_move)):
@@ -384,8 +382,6 @@ class GtpConnection:
                 legal_moves.append(possible_move)
                 
         return legal_moves
-
-    
 
     """
     ==========================================================================
