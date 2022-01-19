@@ -264,7 +264,7 @@ class GtpConnection:
     def gogui_rules_final_result_cmd(self, args):
         """ Implement this function for Assignment 1 """
         if not self.gogui_rules_legal_moves_cmd(args):
-            self.respond(GoBoardUtil.opponent(color_to_int(self.board.current_player)))
+            self.respond(GoBoardUtil.opponent(self.board.current_player))
         else:
             self.respond("unknown")
 
@@ -302,7 +302,7 @@ class GtpConnection:
 
         legal_moves_str.sort()
         legal_str = " ".join(legal_moves_str)
-        return self.respond(legal_str)
+        self.respond(legal_str)
         return legal_moves
 
     def play_cmd(self, args):
