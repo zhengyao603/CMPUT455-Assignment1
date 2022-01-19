@@ -267,7 +267,6 @@ class GtpConnection:
     def gogui_rules_legal_moves_cmd(self, args):
         """ Implement this function for Assignment 1 """
         possible_moves = self.board.get_empty_points()
-        # possible_moves = list(map(format_point, possible_moves))
         legal_moves = list()
         current_player = self.board.current_player
         for possible_move in possible_moves:
@@ -291,11 +290,6 @@ class GtpConnection:
             if not if_capture_suicide:
                 legal_moves.append(possible_move)
 
-        #     possible_move = format_point(point_to_coord(possible_move, self.board.size))
-        #     if self.play_cmd([args[0], possible_move]):
-        #         coord = move_to_coord(possible_move, self.board.size)
-        #         self.board.board[coord_to_point(coord[0], coord[1], self.board.size)] = EMPTY
-        #         legal_moves.append(possible_move)
         legal_moves_str = []
         for lm in legal_moves:
             move_coord = point_to_coord(lm, self.board.size)
@@ -304,7 +298,7 @@ class GtpConnection:
 
         legal_moves_str.sort()
         legal_str = " ".join(legal_moves_str)
-        self.respond(legal_str)
+        return self.respond(legal_str)
         return legal_moves
 
     def play_cmd(self, args):
@@ -355,20 +349,10 @@ class GtpConnection:
                 board_copy = None
                 return False
 
-            # if not self.board.play_move(move, color):
-            #     self.respond("Illegal Move: {}".format(board_move))
-            #     return
-            # else:
-            #     self.debug_msg(
-            #         "Move: {}\nBoard:\n{}\n".format(board_move, self.board2d())
-            #     )
-            # self.respond()
-
             # play the legal move
             self.board.board[move] = color
             self.board.current_player = GoBoardUtil.opponent(color)
-            self.respond(self.gogui_rules_legal_moves_cmd(args))
-            # self.respond()
+            self.respond()
 
             return True
         
@@ -377,25 +361,14 @@ class GtpConnection:
 
     def genmove_cmd(self, args):
         """ generate a move for color args[0] in {'b','w'} """
-        # board_color = args[0].lower()
-        # color = color_to_int(board_color)
-        # move = self.go_engine.get_move(self.board, color)
-        # if self.board.is_legal(move, color):
-        #     self.board.play_move(move, color)
-        #     self.respond(move_as_string)
-        # else:
-        #     self.respond("Illegal move: {}".format(move_as_string))
         moves = self.gogui_rules_legal_moves_cmd(args)
         if not moves:
             # self.respond(self.gogui_rules_final_result_cmd(args))
             self.respond("resign")
             return
         move = random.choice(moves)
-        # move_coord = point_to_coord(move, self.board.size)
-        # move_as_string = format_point(move_coord)
         self.board.board[move] = args[0]
         self.board.current_player = GoBoardUtil.opponent(args[0])
-        # self.play_cmd([args[0], move_as_string])
 
 
     """
