@@ -262,7 +262,13 @@ class GtpConnection:
     def gogui_rules_final_result_cmd(self, args):
         """ Implement this function for Assignment 1 """
         if not self.get_legal_moves():
-            self.respond(GoBoardUtil.opponent(self.board.current_player))
+            if GoBoardUtil.opponent(self.board.current_player) == 1:
+                self.respond("black")
+            elif GoBoardUtil.opponent(self.board.current_player) == 2:
+                self.respond("white")
+            else:
+                self.error("unknown color")
+                
         else:
             self.respond("unknown")
 
