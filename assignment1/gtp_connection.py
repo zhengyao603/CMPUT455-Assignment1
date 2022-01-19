@@ -65,8 +65,6 @@ class GtpConnection:
             "genmove": (1, "Usage: genmove {w,b}"),
             "play": (2, "Usage: play {b,w} MOVE"),
             "legal_moves": (1, "Usage: legal_moves {w,b}"),
-            "gogui_rules_final_result": (1, "Usage: gogui-rules_final_result"),
-            "gogui_rules_legal_moves": (1, "Usage: gogui-rules_legal_moves"),
         }
 
     def write(self, data):
