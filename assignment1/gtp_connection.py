@@ -111,7 +111,7 @@ class GtpConnection:
                 raise e
         else:
             self.debug_msg("Unknown command: {}\n".format(command_name))
-            self.error("Unknown command-----")
+            self.error("Unknown command")
             stdout.flush()
 
     def has_arg_error(self, cmd, argnum):
