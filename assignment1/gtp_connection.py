@@ -51,6 +51,8 @@ class GtpConnection:
             "genmove": self.genmove_cmd,
             "list_commands": self.list_commands_cmd,
             "play": self.play_cmd,
+            "gogui-rules_final_result": self.gogui_rules_final_result_cmd,
+            "gogui-rules_legal_moves": self.gogui_rules_legal_moves_cmd,
         }
 
         # used for argument checking
@@ -63,6 +65,8 @@ class GtpConnection:
             "genmove": (1, "Usage: genmove {w,b}"),
             "play": (2, "Usage: play {b,w} MOVE"),
             "legal_moves": (1, "Usage: legal_moves {w,b}"),
+            "gogui_rules_final_result": (1, "Usage: gogui-rules_final_result"),
+            "gogui_rules_legal_moves": (1, "Usage: gogui-rules_legal_moves"),
         }
 
     def write(self, data):
@@ -109,7 +113,7 @@ class GtpConnection:
                 raise e
         else:
             self.debug_msg("Unknown command: {}\n".format(command_name))
-            self.error("Unknown command")
+            self.error("Unknown command-----")
             stdout.flush()
 
     def has_arg_error(self, cmd, argnum):
