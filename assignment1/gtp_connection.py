@@ -260,7 +260,7 @@ class GtpConnection:
     def gogui_rules_final_result_cmd(self, args):
         """ Implement this function for Assignment 1 """
         if not self.gogui_rules_legal_moves_cmd(args):
-            self.respond(GoBoardUtil.opponent(color_to_int(args[0])))
+            self.respond(GoBoardUtil.opponent(color_to_int(self.board.current_player)))
         else:
             self.respond("unknown")
 
@@ -269,13 +269,42 @@ class GtpConnection:
         possible_moves = self.board.get_empty_points()
         # possible_moves = list(map(format_point, possible_moves))
         legal_moves = list()
+        current_player = self.board.current_player
         for possible_move in possible_moves:
-            possible_move = format_point(point_to_coord(possible_move, self.board.size))
-            if self.play_cmd([args[0], possible_move]):
-                coord = move_to_coord(possible_move, self.board.size)
-                self.board.board[coord_to_point(coord[0], coord[1], self.board.size)] = EMPTY
+
+            if_capture_suicide = False
+
+            # check if the position will be capture
+            board_copy = self.board.copy()
+            board_copy.board[possible_move] = current_player
+            for nb in board_copy._neighbors(possible_move):
+                if GoBoardUtil.opponent(current_player) == board_copy.board[nb]:
+                    if not board_copy._has_liberty(board_copy._block_of(nb)):
+                        if_capture_suicide = True
+                        break
+            
+
+            # check if the position will be suicide
+            if not board_copy._has_liberty(board_copy._block_of(possible_move)):
+                if_capture_suicide = True
+
+            if not if_capture_suicide:
                 legal_moves.append(possible_move)
-        legal_moves.sort()
+
+        #     possible_move = format_point(point_to_coord(possible_move, self.board.size))
+        #     if self.play_cmd([args[0], possible_move]):
+        #         coord = move_to_coord(possible_move, self.board.size)
+        #         self.board.board[coord_to_point(coord[0], coord[1], self.board.size)] = EMPTY
+        #         legal_moves.append(possible_move)
+        legal_moves_str = []
+        for lm in legal_moves:
+            move_coord = point_to_coord(lm, self.board.size)
+            move_as_string = format_point(move_coord)
+            legal_moves_str.append(move_as_string)
+
+        legal_moves_str.sort()
+        legal_str = " ".join(legal_moves_str)
+        self.respond(legal_str)
         return legal_moves
 
     def play_cmd(self, args):
@@ -338,7 +367,8 @@ class GtpConnection:
             # play the legal move
             self.board.board[move] = color
             self.board.current_player = GoBoardUtil.opponent(color)
-            self.respond("hahahahahahha")
+            self.respond(self.gogui_rules_legal_moves_cmd(args))
+            # self.respond()
 
             return True
         
@@ -357,12 +387,15 @@ class GtpConnection:
         #     self.respond("Illegal move: {}".format(move_as_string))
         moves = self.gogui_rules_legal_moves_cmd(args)
         if not moves:
-            self.respond(self.gogui_rules_final_result_cmd(args))
+            # self.respond(self.gogui_rules_final_result_cmd(args))
+            self.respond("resign")
             return
         move = random.choice(moves)
-        move_coord = point_to_coord(move, self.board.size)
-        move_as_string = format_point(move_coord)
-        self.play_cmd([args[0], move_as_string])
+        # move_coord = point_to_coord(move, self.board.size)
+        # move_as_string = format_point(move_coord)
+        self.board.board[move] = args[0]
+        self.board.current_player = GoBoardUtil.opponent(args[0])
+        # self.play_cmd([args[0], move_as_string])
 
 
     """
